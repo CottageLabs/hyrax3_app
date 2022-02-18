@@ -1,6 +1,9 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Added for Rails 5.2
+  config.secret_key_base = ENV['SECRET_KEY_BASE_PRODUCTION']
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
@@ -20,7 +23,11 @@ Rails.application.configure do
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
-  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  if ENV['RAILS_SERVE_STATIC_FILES'].present?
+    config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES']
+  else
+    config.public_file_server.enabled = true
+  end
 
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
@@ -51,7 +58,7 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :debug
+  config.log_level = :info
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
@@ -91,4 +98,18 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  if ENV["RAILS_FORCE_SSL"].present? && (ENV["RAILS_FORCE_SSL"].to_s.downcase == 'false') then
+    config.force_ssl = false
+    Rails.application.routes.default_url_options = \
+      Hyrax::Engine.routes.default_url_options = \
+      {protocol: 'http', host: ENV['APP_HOST']}
+    config.application_url = "http://#{ENV['APP_HOST']}"
+  else
+    config.force_ssl = true #default if nothing specified is more secure.
+    Rails.application.routes.default_url_options = \
+      Hyrax::Engine.routes.default_url_options = \
+      {protocol: 'https', host: ENV['APP_HOST']}
+    config.application_url = "https://#{ENV['APP_HOST']}"
+  end
 end

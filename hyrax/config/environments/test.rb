@@ -43,4 +43,14 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  if ENV['APP_HOST'].present?
+    Rails.application.routes.default_url_options = {protocol: 'http', host: ENV['APP_HOST']}
+    Hyrax::Engine.routes.default_url_options = {protocol: 'http', host: ENV['APP_HOST']}
+    config.application_url = "http://#{ENV['APP_HOST']}"
+  else
+    Rails.application.routes.default_url_options = {protocol: 'http', host: "localhost"}
+    Hyrax::Engine.routes.default_url_options = {protocol: 'http', host: "localhost"}
+    config.application_url = "http://localhost"
+  end
 end
