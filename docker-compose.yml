@@ -5,6 +5,9 @@ volumes:
   db:
   db-fcrepo:
   app:
+  mysql-db:
+  matomo:
+  matomo_logs:
 
 networks:
   internal:
@@ -130,3 +133,57 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  matomo_db:
+    image: mariadb
+    command: --max-allowed-packet=64MB
+    restart: always
+    volumes:
+      - mysql-db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - .env
+    expose:
+      - 3306
+    networks:
+      internal:
+        aliases:
+          - matomo_db
+
+  matomo_app:
+    image: matomo:fpm-alpine
+    restart: always
+    links:
+      - matomo_db
+    volumes:
+      # - ./matomo_config:/var/www/html/config:rw
+      - matomo_logs:/var/www/html/logs
+      - matomo:/var/www/html
+      - ./matomo_config.ini.php:/var/www/html/config/config.ini.php:r
+    environment:
+      - MATOMO_DATABASE_HOST=matomo_db
+      - PHP_MEMORY_LIMIT=2048M
+    env_file:
+      - .env
+    networks:
+      internal:
+        aliases:
+          - matomo_app
+
+  matomo_web:
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - matomo:/var/www/html:ro
+      # see https://github.com/matomo-org/matomo-nginx
+      - ./matomo.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - 8000:80
+#    expose:
+#      - 8000
+    networks:
+      internal:
+        aliases:
+          - matomo
+
