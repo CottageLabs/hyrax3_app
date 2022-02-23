@@ -160,7 +160,7 @@ services:
       # - ./matomo_config:/var/www/html/config:rw
       - matomo_logs:/var/www/html/logs
       - matomo:/var/www/html
-      - ./matomo_config.ini.php:/var/www/html/config/config.ini.php:r
+      - ./matomo_config.ini.php:/var/www/html/config/config.ini.php:rw
     environment:
       - MATOMO_DATABASE_HOST=matomo_db
       - PHP_MEMORY_LIMIT=2048M
