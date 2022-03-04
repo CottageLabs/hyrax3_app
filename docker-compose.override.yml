@@ -55,4 +55,10 @@ services:
   redis:
     volumes:
       - redis:/data
+  db:
+    ports:
+      - 54321:5432
+  appdb:
+    ports:
+      - 54322:5432
 
