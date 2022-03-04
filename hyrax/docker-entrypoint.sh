@@ -38,6 +38,7 @@ fi
 
 echo "Setting up hyrax... (this can take a few minutes)"
 bundle exec rake hyrax3_app:setup_hyrax["seed/setup.json"]
+npm install --unsafe-perm  # install uv, --unsafe-perm for root permission
 
 # echo "--------- Starting Hyrax in $RAILS_ENV mode ---------"
 rm -f /tmp/hyrax.pid
