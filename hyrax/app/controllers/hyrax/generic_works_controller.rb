@@ -34,8 +34,9 @@ module Hyrax
         end
       end
 
-      @permalinks_presenter = PermalinksPresenter.new(main_app.common_object_path(locale: nil),
-                                                      "Permanent link to this page")
+      # KTODO undefined common_object_path
+      # @permalinks_presenter = PermalinksPresenter.new(main_app.common_object_path(locale: nil),
+      #                                                 "Permanent link to this page")
     end
 
     private
