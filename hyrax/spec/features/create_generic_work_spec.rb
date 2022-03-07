@@ -52,7 +52,20 @@ RSpec.feature 'Create a GenericWork', js: false do
       click_link "Descriptions" # switch tab
       fill_in('Title', with: 'My Test Work')
       fill_in('Creator', with: 'Doe, Jane')
+      fill_in('Keyword', with: 'testing')
       select('In Copyright', from: 'Rights statement')
+
+      click_link "Additional fields"
+      fill_in("Identifier", with: "eir-9876-9878")
+      fill_in("Alternate title", with: "Alternate title for my work")
+      fill_in("Award", with: "Best Dissertation of the Year")
+      fill_in("Includes", with: "This work also includes a rails application as part of this dissertation.")
+      fill_in("Date of Digitization", with: "2018-12-25")
+      fill_in("Series", with: "David Lucht")
+      fill_in("Event", with: "10th Anniversary")
+      fill_in("Year", with: "2018")
+      fill_in("Extent", with: "Some random size of the resource")
+      fill_in("School", with: "School of Arts")
 
       # With selenium and the chrome driver, focus remains on the
       # select box. Click outside the box so the next line can't find
@@ -64,7 +77,7 @@ RSpec.feature 'Create a GenericWork', js: false do
 
       click_on('Save')
       expect(page).to have_content('My Test Work')
-      expect(page).to have_content "Your files are being processed by Hyrax in the background."
+      expect(page).to have_content "Your files are being processed by Digital WPI in the background."
     end
   end
 end
