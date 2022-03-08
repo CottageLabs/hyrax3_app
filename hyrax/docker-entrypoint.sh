@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "current env $RAILS_ENV"
 echo "Creating log folder"
 mkdir -p $APP_WORKDIR/log
 
@@ -17,6 +18,13 @@ sleep 15s
 ## Run any pending migrations, if the database exists
 ## If not setup the database
 bundle exec rake db:exists && bundle exec rake db:migrate || bundle exec rake db:setup
+
+# setup test db for unit test
+if [ "$RAILS_ENV" != "production" ]; then
+  echo "setup test db for unit testing"
+  bundle exec rake db:setup RAILS_ENV=test
+  bundle exec rake db:migrate RAILS_ENV=test
+fi
 
 # check that Solr is running
 SOLR=$(curl --silent --connect-timeout 45 "http://${SOLR_HOST:-solr}:${SOLR_PORT:-8983}/solr/" | grep "Apache SOLR")

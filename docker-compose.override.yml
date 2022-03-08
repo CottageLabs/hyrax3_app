@@ -39,6 +39,23 @@ services:
       - cache:${CACHE_PATH}
       - ${HOST_APP_DATA_PATH:-/data/}:/data/data
       - ./hyrax:/data:cached
+    depends_on:
+      - chrome
+    networks:
+      internal:
+        aliases:
+          - web
+
+  chrome:
+    image: selenium/standalone-chrome:3.141
+    logging:
+      driver: none
+    volumes:
+      - /dev/shm:/dev/shm
+    shm_size: 2G
+    ports:
+      - "4444:4444"
+      - "5959:5900"
     networks:
       internal:
         aliases:

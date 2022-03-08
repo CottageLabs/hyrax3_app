@@ -1,5 +1,7 @@
 # Generated via
 #  `rails generate hyrax:work GenericWork`
+
+# KTODO tobe fix solr
 require 'rails_helper'
 
 RSpec.describe Hyrax::GenericWorkPresenter do

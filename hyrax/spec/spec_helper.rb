@@ -91,4 +91,34 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+
+
+  # setup selenium  for unit test
+
+  require 'selenium-webdriver'
+  require 'capybara'
+
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome()
+  Capybara.register_driver :selenium_chrome_headless_sandboxless do |app|
+    driver = Capybara::Selenium::Driver.new(app,
+                                            browser: :remote,
+                                            desired_capabilities: capabilities,
+                                            url: ENV['HUB_URL'])
+
+    # Fix for capybara vs remote files. Selenium handles this for us
+    driver.browser.file_detector = lambda do |args|
+      str = args.first.to_s
+      str if File.exist?(str)
+    end
+
+    driver.maximize_window driver.current_window_handle
+    driver
+
+  end
+
+  Capybara.server_host = '0.0.0.0'
+  Capybara.server_port = 3010
+  ip = IPSocket.getaddress(Socket.gethostname)
+  Capybara.app_host = "http://#{ip}:#{Capybara.server_port}"
+  Capybara.javascript_driver = :selenium_chrome_headless_sandboxless # This is slower
 end
