@@ -1,7 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work GenericWork`
 
-# KTODO tobe fix solr
 require 'rails_helper'
 
 RSpec.describe Hyrax::GenericWorkPresenter do
@@ -9,7 +8,7 @@ RSpec.describe Hyrax::GenericWorkPresenter do
 
   before do
     DatabaseCleaner.clean
-    ActiveFedora::Cleaner.clean!
+    # ActiveFedora::Cleaner.clean!  # KTODO tobe fix uninitialized constant
   end
 
   let(:title) { ['Example title'] }
