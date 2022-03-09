@@ -17,6 +17,9 @@ RSpec.feature 'Create a Dataset', js: false do
     let(:workflow) { Sipity::Workflow.create!(active: true, name: 'test-workflow', permission_template: permission_template) }
 
     before do
+
+      ActiveFedora::Cleaner.clean!
+
       # Create a single action that can be taken
       Sipity::WorkflowAction.create!(name: 'submit', workflow: workflow)
 

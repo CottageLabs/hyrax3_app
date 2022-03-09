@@ -6,8 +6,6 @@ include Warden::Test::Helpers
 # NOTE: If you generated more than one work, you have to set "js: true"
 RSpec.feature 'Create a Etd', js: true do
 
-  ActiveFedora::Cleaner.clean!
-
   context 'a logged in user' do
     let(:user_attributes) do
       { email: 'test@example.com' }
@@ -20,6 +18,9 @@ RSpec.feature 'Create a Etd', js: true do
     let(:workflow) { Sipity::Workflow.create!(active: true, name: 'test-workflow', permission_template: permission_template) }
 
     before do
+
+      ActiveFedora::Cleaner.clean!
+
       # Create a single action that can be taken
       Sipity::WorkflowAction.create!(name: 'submit', workflow: workflow)
 
