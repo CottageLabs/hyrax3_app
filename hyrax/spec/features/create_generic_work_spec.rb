@@ -18,6 +18,7 @@ RSpec.feature 'Create a GenericWork', js: true do
     let(:workflow) { Sipity::Workflow.create!(active: true, name: 'test-workflow', permission_template: permission_template) }
 
     before do
+      ActiveFedora::Cleaner.clean!
       # Create a single action that can be taken
       Sipity::WorkflowAction.create!(name: 'submit', workflow: workflow)
 
@@ -62,7 +63,7 @@ RSpec.feature 'Create a GenericWork', js: true do
       fill_in("Alternate title", with: "Alternate title for my work")
       fill_in("Award", with: "Best Dissertation of the Year")
       fill_in("Includes", with: "This work also includes a rails application as part of this dissertation.")
-      # fill_in("Date of Digitization", with: "2018-12-25")  # KTODO old field ??
+      fill_in("Date of Digitization", with: "2018-12-25")
       fill_in("Series", with: "David Lucht")
       fill_in("Event", with: "10th Anniversary")
       fill_in("Year", with: "2018")
