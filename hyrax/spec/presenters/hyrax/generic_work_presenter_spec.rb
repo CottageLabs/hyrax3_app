@@ -8,7 +8,7 @@ RSpec.describe Hyrax::GenericWorkPresenter do
 
   before do
     DatabaseCleaner.clean
-    # ActiveFedora::Cleaner.clean!  # KTODO tobe fix uninitialized constant
+    ActiveFedora::Cleaner.clean!
   end
 
   let(:title) { ['Example title'] }
