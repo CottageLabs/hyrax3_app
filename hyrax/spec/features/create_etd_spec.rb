@@ -4,7 +4,10 @@ require 'rails_helper'
 include Warden::Test::Helpers
 
 # NOTE: If you generated more than one work, you have to set "js: true"
-RSpec.feature 'Create a Etd', js: false do
+RSpec.feature 'Create a Etd', js: true do
+
+  ActiveFedora::Cleaner.clean!
+
   context 'a logged in user' do
     let(:user_attributes) do
       { email: 'test@example.com' }
@@ -31,28 +34,45 @@ RSpec.feature 'Create a Etd', js: false do
     end
 
     scenario do
-      pending 'Changes may be required for this test to pass.  See TODO in test.'
 
       visit '/dashboard'
       click_link "Works"
       click_link "Add new work"
 
-      # TODO: If you generate more than one work uncomment these lines
-      # choose "payload_concern", option: "Etd"
-      # click_button "Create work"
+      choose "payload_concern", option: "Etd"
+      click_button "Create work"
 
       expect(page).to have_content "Add New Etd"
       click_link "Files" # switch tab
       expect(page).to have_content "Add files"
       expect(page).to have_content "Add folder"
       within('div#add-files') do
-        attach_file("files[]", "#{Hyrax::Engine.root}/spec/fixtures/image.jp2", visible: false)
-        attach_file("files[]", "#{Hyrax::Engine.root}/spec/fixtures/jp2_fits.xml", visible: false)
+        attach_file("files[]", "#{fixture_path}/flower.jpg", visible: false)
       end
       click_link "Descriptions" # switch tab
+      click_link "Additional fields"
       fill_in('Title', with: 'My Test Work')
       fill_in('Creator', with: 'Doe, Jane')
+      fill_in('Keyword', with: 'testing')
       select('In Copyright', from: 'Rights statement')
+
+      click_link "Additional fields"
+      fill_in("Identifier", with: "eir-9876-9878")
+      fill_in("Alternate title", with: "Alternate title for my work")
+      fill_in("Award", with: "Best Dissertation of the Year")
+      fill_in("Includes", with: "This work also includes a rails application as part of this dissertation.")
+      fill_in("Faculty Advisor/Committee Chair", with: "Me, Not")
+      fill_in("Sponsor", with: "Musk, Elon")
+      fill_in("Center", with: "Bangkok, Thailand Project Center")
+      fill_in("Year", with: "2018")
+      fill_in("Funding Organization", with: "National Science Foundation")
+      fill_in("Institute", with: "Thailand Research Institute")
+      fill_in("ORCID ID", with: "5678987654578")
+      fill_in("Committee Member", with: "Cooper, Sheldon")
+      fill_in("Degree", with: "MS")
+      fill_in("Department", with: "Physics")
+      fill_in("School", with: "School of Engineering")
+      fill_in("Date of Defense", with: "2018-12-25")
 
       # With selenium and the chrome driver, focus remains on the
       # select box. Click outside the box so the next line can't find
@@ -62,9 +82,9 @@ RSpec.feature 'Create a Etd', js: false do
       expect(page).to have_content('Please note, making something visible to the world (i.e. marking this as Public) may be viewed as publishing which could impact your ability to')
       check('agreement')
 
-      click_on('Save')
+      click_button('Save')
       expect(page).to have_content('My Test Work')
-      expect(page).to have_content "Your files are being processed by Hyrax in the background."
+      # expect(page).to have_content "Your files are being processed by Hyrax in the background."
     end
   end
 end

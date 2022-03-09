@@ -6,3 +6,13 @@ en:
       etd:
         description:        "Etd works"
         name:               "Etd"
+    citations:
+      citation: Citation
+  simple_form:
+    labels:
+      etd:
+        advisor: "Faculty Advisor/Committee Chair"
+        orcid: "ORCID ID"
+        committee: "Committee Member"
+        defense_date: "Date of Defense"
+        funding: "Funding Organization"
