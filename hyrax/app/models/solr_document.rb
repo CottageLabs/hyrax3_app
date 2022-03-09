@@ -58,9 +58,9 @@ class SolrDocument
     self[Solrizer.solr_name('school')]
   end
 
-  # def identifier
-  #   self[Solrizer.solr_name('identifier')]   # KTODO tobe fix uninitialized constant
-  # end
+  def identifier
+    self[Solrizer.solr_name('identifier')]
+  end
 
   def alternate_title
     self[Solrizer.solr_name('alternate_title')]
