@@ -1,15 +1,20 @@
 Rails.application.routes.draw do
-  mount Riiif::Engine => 'images', as: :riiif if Hyrax.config.iiif_image_server?
-        mount BrowseEverything::Engine => '/browse'
 
+  mount Riiif::Engine => 'images', as: :riiif if Hyrax.config.iiif_image_server?
   mount Blacklight::Engine => '/'
-  
+  mount BrowseEverything::Engine => '/browse'
+
   concern :searchable, Blacklight::Routes::Searchable.new
 
   resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable
   end
   devise_for :users
+  get 'login' => 'static#login'
+  get 'about-page' => 'static#about-page'
+  get 'help-page' => 'static#help-page'
+  get 'project-centers' => 'static#centers'
+  get 'col' => 'static#collections'
   mount Hydra::RoleManagement::Engine => '/'
 
   mount Qa::Engine => '/authorities'
