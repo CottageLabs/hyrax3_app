@@ -11,27 +11,50 @@ else
     bundle check || bundle install --without production
 fi
 
-# wait for Solr and Fedora to come up
-sleep 15s
-
 ## Run any pending migrations, if the database exists
 ## If not setup the database
 bundle exec rake db:exists && bundle exec rake db:migrate || bundle exec rake db:setup
 
-# check that Solr is running
+# Check solr and fedora are running
+n=0
+solr_running=false
+fedora_running=false
+while [[ $n -lt 15 ]]
+do
+    # check Solr is running
+    if [ "solr_running" = false ]
+      SOLR=$(curl --silent --connect-timeout 45 "http://${SOLR_HOST:-solr}:${SOLR_PORT:-8983}/solr/" | grep "Apache SOLR")
+      if [ -n "$SOLR" ] ; then
+          solr_running=true
+      fi
+    fi
+
+    # check Fedora is running
+    if [ "fedora_running" = false ]
+      FEDORA=$(curl --silent --connect-timeout 45 "http://${FEDORA_HOST:-fcrepo}:${FEDORA_PORT:-8080}/fcrepo/" | grep "Fedora Commons Repository")
+      if [ -n "$FEDORA" ] ; then
+          fedora_running=true
+      fi
+    fi
+
+    if [ "solr_running" = true ] &&  [ "fedora_running" = true ]
+      break
+    else
+      sleep 1
+    fi
+    n=$(( n+1 ))
+done
+
+# Exit if Solr is not running
 SOLR=$(curl --silent --connect-timeout 45 "http://${SOLR_HOST:-solr}:${SOLR_PORT:-8983}/solr/" | grep "Apache SOLR")
-if [ -n "$SOLR" ] ; then
-    echo "Solr is running..."
-else
+if ! [ -n "$SOLR" ] ; then
     echo "ERROR: Solr is not running"
     exit 1
 fi
 
-# check that Fedora is running
+# Exit if Fedora is not running
 FEDORA=$(curl --silent --connect-timeout 45 "http://${FEDORA_HOST:-fcrepo}:${FEDORA_PORT:-8080}/fcrepo/" | grep "Fedora Commons Repository")
-if [ -n "$FEDORA" ] ; then
-    echo "Fedora is running..."
-else
+if ! [ -n "$FEDORA" ] ; then
     echo "ERROR: Fedora is not running"
     exit 1
 fi
