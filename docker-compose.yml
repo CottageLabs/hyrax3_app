@@ -171,19 +171,19 @@ services:
         aliases:
           - matomo_app
 
-  matomo_web:
-    image: nginx:alpine
-    restart: always
-    volumes:
-      - matomo:/var/www/html:ro
-      # see https://github.com/matomo-org/matomo-nginx
-      - ./matomo.conf:/etc/nginx/conf.d/default.conf:ro
-    ports:
-      - 8000:80
+# matomo_web:
+#    image: nginx:alpine
+#    restart: always
+#    volumes:
+#      - matomo:/var/www/html:ro
+#      # see https://github.com/matomo-org/matomo-nginx
+#      - ./matomo.conf:/etc/nginx/conf.d/default.conf:ro
+#    ports:
+#      - 8000:80
 #    expose:
 #      - 8000
-    networks:
-      internal:
-        aliases:
-          - matomo
+#    networks:
+#      internal:
+#        aliases:
+#          - matomo
 
