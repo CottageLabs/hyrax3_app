@@ -22,7 +22,7 @@ fedora_running=false
 while [[ $n -lt 15 ]]
 do
     # check Solr is running
-    if [ "solr_running" = false ]
+    if [ "solr_running" = false ] ; then
       SOLR=$(curl --silent --connect-timeout 45 "http://${SOLR_HOST:-solr}:${SOLR_PORT:-8983}/solr/" | grep "Apache SOLR")
       if [ -n "$SOLR" ] ; then
           echo "Solr is running"
@@ -31,7 +31,7 @@ do
     fi
 
     # check Fedora is running
-    if [ "fedora_running" = false ]
+    if [ "fedora_running" = false ] ; then
       FEDORA=$(curl --silent --connect-timeout 45 "http://${FEDORA_HOST:-fcrepo}:${FEDORA_PORT:-8080}/fcrepo/" | grep "Fedora Commons Repository")
       if [ -n "$FEDORA" ] ; then
           echo "Fedora is running"
@@ -39,7 +39,7 @@ do
       fi
     fi
 
-    if [ "solr_running" = true ] &&  [ "fedora_running" = true ]
+    if [ "solr_running" = true ] &&  [ "fedora_running" = true ] ; then
       break
     else
       sleep 1
