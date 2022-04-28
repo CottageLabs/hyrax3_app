@@ -4,5 +4,5 @@ pt-BR:
       generic_work:     'fa fa-file-text-o'
     select_type:
       generic_work:
-        description:        "Generic work obras"
+        description:        "Generic work trabalhos"
         name:               "Generic Work"

@@ -15,7 +15,7 @@ Rails.application.configure do
   # Configure public file server for tests with Cache-Control for performance.
   config.public_file_server.enabled = true
   config.public_file_server.headers = {
-    'Cache-Control' => "public, max-age=#{1.hour.to_i}"
+    'Cache-Control' => "public, max-age=#{1.hour.seconds.to_i}"
   }
 
   # Show full error reports and disable caching.
@@ -53,4 +53,10 @@ Rails.application.configure do
     Hyrax::Engine.routes.default_url_options = {protocol: 'http', host: "localhost"}
     config.application_url = "http://localhost"
   end
+
+  # Built-in test adapter to store and enque jobs
+  config.active_job.queue_adapter = :test
+
+  # Remove rack-attack so tests aren't rate limited
+  # config.middleware.delete Rack::Attack
 end

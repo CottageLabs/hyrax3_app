@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   mount Riiif::Engine => 'images', as: :riiif if Hyrax.config.iiif_image_server?
   mount Blacklight::Engine => '/'
-  mount BrowseEverything::Engine => '/browse'
+  # mount BrowseEverything::Engine => '/browse'
 
   concern :searchable, Blacklight::Routes::Searchable.new
 
@@ -20,6 +20,12 @@ Rails.application.routes.draw do
   get '/collections/ms55', to: redirect('/collections/vx021h564')
   get '/collections/boz', to: redirect('/collections/sq87bv394')
   get '/collections/summits', to: redirect('/collections/b8515q79x')
+  get '/collections/theo', to: redirect('/collections/3x816q79g')
+
+  resources :bepress
+
+  get '/bepress/r/:resource_type/:bepress_id', to: 'bepress#record'
+  get '/bepress/d/:resource_type/:download_id', to: 'bepress#document'
 
   devise_for :users
   get 'login' => 'static#login'
@@ -41,13 +47,10 @@ Rails.application.routes.draw do
   curation_concerns_basic_routes
   concern :exportable, Blacklight::Routes::Exportable.new
 
-
   mount PdfjsViewer::Rails::Engine => "/pdfjs", as: 'pdfjs'
   #match '/pdfviewer/:id', to: 'pdfviewer#index', constraints: { id: /.*/ }, as: 'pdfviewer', via: [:get]
   get '/pdfviewer/:id', to: 'pdfviewer#index', constraints: { id: /[a-z0-9]{9}/ }
   get '/pdfviewer/:id/:parent', to: 'pdfviewer#index', constraints: { id: /[a-z0-9]{9}/ }
-
-
 
   resources :solr_documents, only: [:show], path: '/catalog', controller: 'catalog' do
     concerns :exportable
@@ -60,5 +63,8 @@ Rails.application.routes.draw do
       delete 'clear'
     end
   end
+
+  match 'show/:id' => 'common_objects#show', via: :get, as: 'common_object'
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

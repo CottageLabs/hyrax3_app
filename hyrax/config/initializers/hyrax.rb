@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 Hyrax.config do |config|
-  # Injected via `rails g hyrax:work Dataset`
-  config.register_curation_concern :dataset
-  # Injected via `rails g hyrax:work GenericWork`
-  config.register_curation_concern :generic_work
   # Injected via `rails g hyrax:work Etd`
   config.register_curation_concern :etd
+  # Injected via `rails g hyrax:work GenericWork`
+  config.register_curation_concern :generic_work
   # Injected via `rails g hyrax:work StudentWork`
   config.register_curation_concern :student_work
   # Register roles that are expected by your implementation.
@@ -31,7 +29,7 @@ Hyrax.config do |config|
   # config.rendering_predicate = ::RDF::DC.hasFormat
 
   # Email recipient of messages sent via the contact form
-  config.contact_email = ENV['CONTACT_FORM_RECIPIENT_EMAIL'] || "repo-admin@example.org"
+  config.contact_email = ENV['MAILUSER']
 
   # Text prefacing the subject entered in the contact form
   config.subject_prefix = ENV['CONTACT_FORM_SUBJECT_PREFIX'] || "Hyrax Contact form:"
@@ -57,14 +55,14 @@ Hyrax.config do |config|
   # config.temp_file_base = '/home/developer1'
 
   # Hostpath to be used in Endnote exports
-  # config.persistent_hostpath = 'http://localhost/files/'
+  config.persistent_hostpath = 'https://' + ENV["SERVERNAME"] + '/show/'
 
   # If you have ffmpeg installed and want to transcode audio and video set to true
   config.enable_ffmpeg = true
 
   # Hyrax uses NOIDs for files and collections instead of Fedora UUIDs
   # where NOID = 10-character string and UUID = 32-character string w/ hyphens
-  config.enable_noids = true
+  # config.enable_noids = true
 
   # Template for your repository's NOID IDs
   # config.noid_template = ".reeddeeddk"
@@ -181,7 +179,7 @@ Hyrax.config do |config|
   # config.audit_user_key = 'audituser@example.com'
   #
   # The banner image. Should be 5000px wide by 1000px tall
-  # config.banner_image = 'https://cloud.githubusercontent.com/assets/92044/18370978/88ecac20-75f6-11e6-8399-6536640ef695.jpg'
+  config.banner_image = 'https://cloud.githubusercontent.com/assets/92044/18370978/88ecac20-75f6-11e6-8399-6536640ef695.jpg'
 
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately
@@ -277,7 +275,7 @@ Hyrax.config do |config|
   # If browse-everything has been configured, load the configs.  Otherwise, set to nil.
   begin
     if defined? BrowseEverything
-      config.browse_everything = BrowseEverything.config
+      config.browse_everything = nil
     else
       Rails.logger.warn "BrowseEverything is not installed"
     end
@@ -311,7 +309,7 @@ Hyrax.config do |config|
   # config.identifier_registrars = {}
 end
 
-DEFAULT_DATE_FORMAT = ENV['DEFAULT_DATE_FORMAT'] || '%d/%m/%Y'
+DEFAULT_DATE_FORMAT = ENV['DEFAULT_DATE_FORMAT'] || '%m/%d/%Y'
 Date::DATE_FORMATS[:standard] = DEFAULT_DATE_FORMAT
 DateTime::DATE_FORMATS[:standard] = DEFAULT_DATE_FORMAT
 Date::DATE_FORMATS[:default] = DEFAULT_DATE_FORMAT

@@ -47,12 +47,20 @@ fr:
           title_tesim: Titre
   hyrax:
     account_name: L'ID de compte de mon établissement
+    base:
+      items:
+        embargo_release_date: Embargo Release Date
+    dashboard:
+      my:
+        heading:
+          embargo_release_date: Embargo Release Date
     directory:
       suffix: "@ Example.org"
     footer:
       copyright_html: "<strong>Copyright © 2018 Samvera</strong> Licence sous Licence Apache, Version 2.0"
       service_html: Un service de <a href="http://samvera.org/" class="navbar-link" target="_blank">Samvera</a> .
-    institution_name: Institution
-    institution_name_full: Nom de l'établissement
+    institution_name: WPI
+    institution_name_full: Institut Polytechnique de Worcester
+    institution_address: "100 Institute Road, Worcester MA 01609-2280 USA"
     product_name: Hyrax
     product_twitter_handle: "@SamveraRepo"

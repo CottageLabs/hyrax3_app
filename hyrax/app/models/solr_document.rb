@@ -11,7 +11,7 @@ class SolrDocument
 
   # self.unique_key = 'id'
   # Added OAI setting in SolrDocument
-  # self.timestamp_key = 'system_create_dtsi'  # KTODO what is this
+  # self.timestamp_key = 'system_create_dtsi'
 
   # Email uses the semantic field mappings below to generate the body of an email.
   SolrDocument.use_extension(Blacklight::Document::Email)

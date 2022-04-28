@@ -1,7 +1,7 @@
 development:
   adapter: redis
   url: redis://<%= ENV['REDIS_HOST'] || 'localhost' %>:<%= ENV['REDIS_PORT'] || '6379' %>/1
-  channel_prefix: hyrax_development
+  channel_prefix: wpirepo_development
 
 test:
   adapter: async
@@ -9,4 +9,4 @@ test:
 production:
   adapter: redis
   url: redis://<%= ENV['REDIS_HOST'] || 'redis' %>:<%= ENV['REDIS_PORT'] || '6379' %>/1
-  channel_prefix: hyrax_production
+  channel_prefix: wpirepo_production

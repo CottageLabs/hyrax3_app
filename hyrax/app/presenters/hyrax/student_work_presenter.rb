@@ -1,13 +1,7 @@
 # Generated via
 #  `rails generate hyrax:work StudentWork`
-#
-#
-# require '../../../services/sdg_service'
-
-
 module Hyrax
   class StudentWorkPresenter < Hyrax::WorkShowPresenter
-
     include ::SdgService
 
     delegate :note, to: :solr_document
@@ -57,8 +51,6 @@ module Hyrax
         end
       end
     end
-
-
 
   end
 end
