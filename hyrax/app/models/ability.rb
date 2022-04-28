@@ -2,10 +2,7 @@ class Ability
   include Hydra::Ability
   
   include Hyrax::Ability
-  self.ability_logic += [
-    :everyone_can_create_curation_concerns,
-    :create_content
-  ]
+  self.ability_logic += [:everyone_can_create_curation_concerns]
 
   # Define any customized permissions here.
   def custom_permissions
@@ -25,9 +22,21 @@ class Ability
     end
   end
 
-  def create_content
-    # everyone who is logged in can create content
-    # return unless registered_user?
-    can :create, ::Dataset if current_user
-  end
+
+    ##
+    # this function everyone_can_create_curation_concerns gives all the ability to create works 
+    # it does so by seeing if the user is registered, if so it grants the cancan ability create
+    # to the list of Curation Concerns (work types + file sets and collecitons ) returned by the method curation_concerns_models().
+    # 
+    def everyone_can_create_curation_concerns()
+      return unless registered_user?
+      can :create, [::FileSet, ::Collection, ::Etd, ::GenericWork, ::StudentWork]
+    end
+    ##
+    # returns the list of things that any shmuck can create. by default its everything 
+    #
+    def curation_concerns_models()
+
+      [::FileSet, ::Collection, ::Etd, ::GenericWork, ::StudentWork]
+    end
 end
