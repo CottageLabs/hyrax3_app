@@ -42,6 +42,9 @@ GEM
     active_encode (0.8.2)
       rails
       sprockets (< 4)
+    active_fedora-noid (0.1.0)
+      active-fedora
+      noid
     activejob (5.2.6.2)
       activesupport (= 5.2.6.2)
       globalid (>= 0.3.6)
@@ -181,6 +184,12 @@ GEM
       thor (>= 0.19.4, < 2.0)
       tins (~> 1.6)
     crass (1.0.6)
+    database_cleaner (2.0.1)
+      database_cleaner-active_record (~> 2.0.0)
+    database_cleaner-active_record (2.0.1)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     declarative (0.0.20)
     declarative-builder (0.1.0)
       declarative-option (< 0.2.0)
@@ -298,6 +307,8 @@ GEM
       jquery-rails
     font-awesome-rails (4.7.0.8)
       railties (>= 3.2, < 8.0)
+    geckodriver-helper (0.24.0)
+      archive-zip (~> 0.7)
     gems (1.2.0)
     geocoder (1.7.3)
     globalid (1.0.0)
@@ -936,6 +947,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active_fedora-noid
   bootsnap (>= 1.1.0)
   bootstrap-datepicker-rails
   bootstrap-sass (~> 3.0)
@@ -944,10 +956,12 @@ DEPENDENCIES
   chromedriver-helper
   coffee-rails (~> 4.2)
   coveralls
+  database_cleaner
   devise
   devise-guests (~> 0.6)
   factory_bot_rails
   fcrepo_wrapper
+  geckodriver-helper (= 0.24.0)
   hydra-role-management
   hyrax (= 3.3.0)
   jbuilder (~> 2.5)

@@ -29,3 +29,9 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+
+# ignore public/uv
+public/uv/
+fits.log
+package-lock.json

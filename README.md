@@ -189,5 +189,11 @@ docker exec -it hyrax3_app-web-1 /bin/bash
 
 There is [docker documentation](https://docs.docker.com/storage/volumes/#backup-restore-or-migrate-data-volumes) advising how to back up volumes and their data.
 
+### System initialisation and configuration
+
+* As mentioned above, there is a `.env` file containing application secrets. This **must not** be checked into version control!
+
+* The system is configured on start-up using the `docker-entrypoint.sh` script, which configures users in the `seed/setup.json` file.
 
 
+  
