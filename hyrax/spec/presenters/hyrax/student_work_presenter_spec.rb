@@ -1,9 +1,8 @@
 # Generated via
-#  `rails generate hyrax:work GenericWork`
-
+#  `rails generate hyrax:work StudentWork`
 require 'rails_helper'
 
-RSpec.describe Hyrax::GenericWorkPresenter do
+RSpec.describe Hyrax::StudentWorkPresenter do
   subject { presenter }
 
   before do
@@ -20,15 +19,17 @@ RSpec.describe Hyrax::GenericWorkPresenter do
   let(:alternate_title) { ['Example Alternate Title'] }
   let(:award) { ['Best Dissertation of the Year'] }
   let(:includes) { ['This work also includes a rails application.'] }
-  let(:digitization_date) { '2018-12-25' }
-  let(:series) { ['David Lucht'] }
-  let(:event) { ['12th Anniversary'] }
+  let(:advisor) { ['Hawking, Stephen'] }
+  let(:sponsor) { ['Musk, Elon'] }
+  let(:center) { ['Bangkok, Thailand Project Center'] }
   let(:year) { '2018' }
-  let(:extent) { ['4:42 mins'] }
+  let(:funding) { ['National Science Foundation'] }
+  let(:institute) { ['Thailand Research Institute'] }
   let(:school) { ['School of Engineering'] }
+  let(:major) { ['Theatre'] }
 
-  let :generic_work do
-    GenericWork.create(
+  let :student_work do
+    StudentWork.create(
       title: title,
       creator: creator,
       keyword: keyword,
@@ -38,18 +39,20 @@ RSpec.describe Hyrax::GenericWorkPresenter do
       alternate_title: alternate_title,
       award: award,
       includes: includes,
-      digitization_date: digitization_date,
-      series: series,
-      event: event,
+      advisor: advisor,
+      sponsor: sponsor,
+      center: center,
       year: year,
-      extent: extent,
-      school: school
+      funding: funding,
+      institute: institute,
+      school: school,
+      major: major
     )
   end
 
   let(:ability) { Ability.new(user) }
 
-  let(:solr_document) { SolrDocument.new(generic_work.to_solr) }
+  let(:solr_document) { SolrDocument.new(student_work.to_solr) }
 
   let(:presenter) do
     described_class.new(solr_document, nil)
@@ -68,27 +71,36 @@ RSpec.describe Hyrax::GenericWorkPresenter do
     presenter.includes
   end
   it "delegates advisor to solr document" do
-    expect(solr_document).to receive(:digitization_date)
-    presenter.digitization_date
+    expect(solr_document).to receive(:advisor)
+    presenter.advisor
   end
   it "delegates sponsor to solr document" do
-    expect(solr_document).to receive(:series)
-    presenter.series
+    expect(solr_document).to receive(:sponsor)
+    presenter.sponsor
   end
   it "delegates center to solr document" do
-    expect(solr_document).to receive(:event)
-    presenter.event
+    expect(solr_document).to receive(:center)
+    presenter.center
   end
   it "delegates year to solr document" do
     expect(solr_document).to receive(:year)
     presenter.year
   end
   it "delegates funding to solr document" do
-    expect(solr_document).to receive(:extent)
-    presenter.extent
+    expect(solr_document).to receive(:funding)
+    presenter.funding
+  end
+  it "delegates institute to solr document" do
+    expect(solr_document).to receive(:institute)
+    presenter.institute
   end
   it "delegates school to solr document" do
     expect(solr_document).to receive(:school)
     presenter.school
   end
+  it "delegates major to solr document" do
+    expect(solr_document).to receive(:major)
+    presenter.major
+  end
 end
+

@@ -93,3 +93,4 @@ gem 'pg'
 gem 'riiif', '~> 2.3'
 gem 'coveralls', require: false
 gem 'database_cleaner'
+gem 'solrizer', '~> 4.1'

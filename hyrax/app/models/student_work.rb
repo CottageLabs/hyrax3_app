@@ -1,9 +1,9 @@
 # Generated via
-#  `rails generate hyrax:work Etd`
-class Etd < ActiveFedora::Base
+#  `rails generate hyrax:work StudentWork`
+class StudentWork < ActiveFedora::Base
   include ::Hyrax::WorkBehavior
 
-  self.indexer = EtdIndexer
+  self.indexer = StudentWorkIndexer
   # Change this to restrict which works can be added as a child.
   # self.valid_child_concerns = []
   validates :title, presence: { message: 'Your work must have a title.' }
@@ -44,29 +44,22 @@ class Etd < ActiveFedora::Base
     index.as :stored_searchable
   end
 
-  property :orcid, predicate: "http://vivoweb.org/ontology/core#orcidId" do |index|
-    index.as :stored_searchable
-  end
-
-  property :committee, predicate: "http://id.loc.gov/ontologies/bibframe/contribution" do |index|
-    index.as :stored_searchable
-  end
-
-  property :degree, predicate: "http://vivoweb.org/ontology/core#AcademicDegree", multiple: false do |index|
-    index.as :stored_searchable, :facetable
-  end
-
-  property :department, predicate: "http://vivoweb.org/ontology/core#AcademicDepartment" do |index|
-    index.as :stored_searchable, :facetable
-  end
-
   property :school, predicate: "http://vivoweb.org/ontology/core#College" do |index|
     index.as :stored_searchable, :facetable
   end
 
-  property :defense_date, predicate: "http://purl.org/dc/terms/dateAccepted", multiple: false do |index|
+  property :major, predicate: "http://vivoweb.org/ontology/core#majorField" do |index|
+    index.as :stored_searchable, :facetable
+  end
+
+  property :sdg, predicate: "http://metadata.un.org/sdg/ontology#Goal" do |index|
+    index.as :stored_searchable, :facetable
+  end
+
+  property :note, predicate: "http://www.w3.org/2006/vcard/ns#Note", multiple: false do |index|
     index.as :stored_searchable
   end
+
 
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
