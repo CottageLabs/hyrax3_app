@@ -15,7 +15,8 @@ Ensure you have docker and docker-compose.
 
 Open a console and try running `docker -h` and `docker-compose -h` to verify they are both accessible.
 
-Create the environment file `.env`. You can start by copying the template file [.env.template.development](https://github.com/CottageLabs/hyrax3_app/blob/master/.env.template.development) to `.env` and customizing the values to your setup. (For production environment, use .env.template as your template)
+Create the environment file `.env`. You can start by copying the template file [.env.template.development](https://github.com/CottageLabs/hyrax3_app/blob/master/.env.template.development) to `.env` and customizing the values to your setup. <br>
+Note: For production environment, use .env.template as your template.
 
 ## quick start
 If you would like to do a test run of the system, start the docker containers
@@ -27,16 +28,52 @@ You should see the containers being built and the services start.
 
 ## Docker compose explained
 
-There are 4 `docker-compose` files provided in the repository, which build the containers running the services as shown above
-* [docker-compose.yml](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml) is the main docker-compose file. It builds all the core servcies required to run the application
-* [fcrepo](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L13-L22) is the container running the [Fedora 4 commons repository](https://wiki.duraspace.org/display/FEDORA47/Fedora+4.7+Documentation), an rdf document store. By default, this runs the fedora service on port 8080 internally in docker (http://fcrepo:8080/fcrepo/rest).<br/><br/>
-* [Solr container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L24-L45) runs [SOLR](lucene.apache.org/solr/), an enterprise search server. By default, this runs the SOLR service on port 8983 internally in docker (http://solr:8983).<br/><br/>
-* [db containers](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L47-L76) running a postgres database, used by the Hyrax application and Fedora. By default, this runs the database service on port 5432 internally in docker.<br/><br/>
-* [redis container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L121-L132) running [redis](https://redis.io/), used by Hyrax to manage background tasks. By default, this runs the redis service on port 6379 internally in docker.<br/><br/>
-* [app container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L78-L96) sets up the [Hyrax] application, which is then used by 2 services - web and workers.<br/><br/>
-  * [Web container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L98-L110) runs the application. By default, this runs on port 3000 internally in docker (http://web:3000). <br/><br/>This container runs [docker-entrypoint.sh](https://github.com/CottageLabs/hyrax3_app/blob/master/hyrax/docker-entrypoint.sh). It needs the database, solr and fedora containers to be up and running. It waits for 15s to ensure Solr and fedora are running and exits if they are not. It [runs a rake task](https://github.com/CottageLabs/hyrax3_app/blob/master/hyrax/docker-entrypoint.sh#L39-L40), ([https://github.com/CottageLabs/hyrax3_app/blob/master/hyrax/lib/tasks/setup_hyrax.rake)) to setup the application. <br/><br/>The default workflows are loaded, the default admin set and collection types are created as a part of the setup.<br/><br/>
-  * [Wokers container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L112-L119) runs the background tasks for materials data repository, using [sidekiq](https://github.com/mperham/sidekiq) and redis. By default, this runs the worker service. <br/><br/> Hyrax processes long-running or particularly slow work in background jobs to speed up the web request/response cycle. When a user submits a file through a work (using the web or an import task), there a humber of background jobs that are run, initilated by the hyrax actor stack, as explained [here](https://samvera.github.io/what-happens-deposit-2.0.html)<br/><br/>You can monitor the background workers using the materials data repository service at http://web:3000/sidekiq when logged in as an admin user. <br/><br/>
-* [docker-compose.override.yml](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.override.yml) This file exposes the ports for fcrepo, solr and the hyrax web container, so they an be accessed outside the container. If running this service in development or test, we could use this file. <br/>
+There are 2 `docker-compose` files provided in the repository, which build the containers running the services.
+* [docker-compose.yml](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml) is the main docker-compose file. It builds all the core servcies required to run the application.
+  
+* [docker-compose.override.yml](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.override.yml) is used along with the main [docker-compose.yml](https://gitlab.ruhr-uni-bochum.de/FDM/rdm-system/rdms/-/blob/master/docker-compose.yml) file in development, mainly to expose ports for the various services.
+
+### Containers running in docker
+
+* [fcrepo](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L13-L22) is the container running the [Fedora 4 commons repository](https://wiki.duraspace.org/display/FEDORA47/Fedora+4.7+Documentation), an rdf document store. 
+  
+  By default, this runs the fedora service on port 8080 internally in docker. 
+  http://fcrepo:8080/fcrepo/rest
+  
+* [Solr container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L24-L45) runs [SOLR](lucene.apache.org/solr/), an enterprise search server. 
+  
+  By default, this runs the SOLR service on port 8983 internally in docker.
+  http://solr:8983
+  
+* [db containers](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L47-L76) running a postgres database, used by the Hyrax application (appdb) and Fedora (fcrepodb). 
+  
+  By default, this runs the database service on port 5432 internally in docker.
+
+* [redis container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L121-L132) running [redis](https://redis.io/), used by Hyrax to manage background tasks. 
+  
+  By default, this runs the redis service on port 6379 internally in docker.
+
+* [app container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L78-L96) sets up the [Hyrax] application, which is then used by 2 services - web and workers.
+  
+  * [Web container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L98-L110) runs the application. 
+    By default, this runs on port 3000 internally in docker. 
+    http://web:3000
+    This container runs [docker-entrypoint.sh](https://github.com/CottageLabs/hyrax3_app/blob/master/hyrax/docker-entrypoint.sh) on startup. The bash scripts 
+  
+    * creates the log folder
+    * checks the bundle (and installs It in development)
+    * does the database setup
+    * checks Solr and Fedora are running
+    * It runs a rake task [setup_hyrax.rake](https://github.com/CottageLabs/hyrax3_app/blob/master/hyrax/lib/tasks/setup_hyrax.rake) to setup the application. This rake task 
+      * creates users listed in [setup.json]( https://github.com/CottageLabs/hyrax3_app/blob/master/hyrax/seed/setup.json)
+  
+      * Loads the default workflows
+  
+      * Creates the default admin set and collection types
+    * Starts the rails server
+  * [Wokers container](https://github.com/CottageLabs/hyrax3_app/blob/master/docker-compose.yml#L112-L119) runs the background tasks, using [sidekiq](https://github.com/mperham/sidekiq) and redis. 
+  
+    Hyrax processes long-running or particularly slow work in background jobs to speed up the web request/response cycle. When a user submits a file through a work (using the web or an import task), there a humber of background jobs that are run, initilated by the hyrax actor stack, as explained [here](https://samvera.github.io/what-happens-deposit-2.0.html)<br/>You can monitor the background workers using the materials data repository service at http://web:3000/sidekiq when logged in as an admin user. 
 
 
 The data for the application is stored in docker named volumes as specified by the compose files. These are:
@@ -78,17 +115,6 @@ Static asset build is only run in `production` environment to speed up container
 ```
 hd run web yarn install
 ```
-
-## Running in production
-
-When running in production, prepare your .env file using .env.template as the template (not .env.template.development). You need to use `docker-compose -f docker-compose.yml -f docker-compose-production.yml`, replacing docker-compose.override.yml with docker-compose-production.yml. To assist this, an alias similar to that below can be useful:
-
-```bash
-alias hd='docker-compose -f docker-compose.yml'
-```
-
-* The service will run without the ports of intermediary services such as Solr being exposed to the host.
-* Materials data repository is accessible at port 443, http requests to port 80 will be redirected to https.
 
 ## Builidng, starting and managing the service with docker
 
@@ -163,10 +189,5 @@ docker exec -it hyrax3_app-web-1 /bin/bash
 
 There is [docker documentation](https://docs.docker.com/storage/volumes/#backup-restore-or-migrate-data-volumes) advising how to back up volumes and their data.
 
-### System initialisation and configuration
 
-* As mentioned above, there is a `.env` file containing application secrets. This **must not** be checked into version control!
 
-* The system is configured on start-up using the `docker-entrypoint.sh` script, which configures users in the `seed/setup.json` file.
-
-  
