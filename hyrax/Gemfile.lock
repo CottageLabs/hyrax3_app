@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/TuftsUniversity/pdfjs_viewer-rails.git
+  revision: d624c83a6fa9e8338989b9ec813caab288d437af
+  tag: tdl-20200428
+  specs:
+    pdfjs_viewer-rails (0.3.1)
+      json (> 1.8.4)
+      rails (> 4.2.0)
+      sass-rails (~> 5.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -969,6 +979,7 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   jquery-rails
   listen (>= 3.0.5, < 3.2)
+  pdfjs_viewer-rails!
   pg
   puma (~> 3.11)
   rails (~> 5.2.6)
@@ -978,7 +989,7 @@ DEPENDENCIES
   rspec-rails
   sass-rails (~> 5.0)
   selenium-webdriver
-  sidekiq
+  sidekiq (~> 6.0)
   solr_wrapper (>= 0.3)
   solrizer (~> 4.1)
   spring

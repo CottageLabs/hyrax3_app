@@ -26,6 +26,21 @@ $ docker-compose up -d
 ```
 You should see the containers being built and the services start.
 
+Installation
+-------------------------
+
+### init matomo
+* run all docker with `docker-compose up`
+* access and config matomo, in `http://localhost:8000` 
+* after completed installation, go docker volume folder `cd /var/lib/docker/volumes` 
+* find matomo config file  `find -name config.ini.php`
+* edit file `vi ./hyrax3_app_matomo/_data/config/config.ini.php`
+* add following line
+```
+trusted_hosts[] = "localhost:8000"
+```
+
+
 ## Docker compose explained
 
 There are 2 `docker-compose` files provided in the repository, which build the containers running the services.
