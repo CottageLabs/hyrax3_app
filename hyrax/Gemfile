@@ -97,3 +97,6 @@ gem 'solrizer', '~> 4.1'
 
 # for pdfviewer
 gem 'pdfjs_viewer-rails', git: 'https://github.com/TuftsUniversity/pdfjs_viewer-rails.git', tag: 'tdl-20200428'
+
+# add mysql for prod envs
+gem 'mysql2', '~> 0.5'
