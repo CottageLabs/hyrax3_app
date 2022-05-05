@@ -100,3 +100,9 @@ gem 'pdfjs_viewer-rails', git: 'https://github.com/TuftsUniversity/pdfjs_viewer-
 
 # add mysql for prod envs
 gem 'mysql2', '~> 0.5'
+
+group :deployment, :development do
+  gem "capistrano", "~> 3.17", require: false
+  gem "capistrano-rails", "~> 1.6", require: false
+end
+
