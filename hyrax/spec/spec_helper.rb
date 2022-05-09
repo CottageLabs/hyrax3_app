@@ -99,15 +99,15 @@ RSpec.configure do |config|
   require 'selenium-webdriver'
 
   Capybara.register_driver :selenium_chrome_headless do |app|
-    options = Selenium::WebDriver::Chrome::Options.new
+    chrome_options = Selenium::WebDriver::Chrome::Options.new
 
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--window-size=1400,1400')
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--window-size=1400,1400')
 
-    driver = Capybara::Selenium::Driver.new(app, browser: :chrome, options: chrome_options )
+    driver = Capybara::Selenium::Driver.new(app, browser: :remote, options: chrome_options )
 
     # Fix for capybara vs remote files. Selenium handles this for us
     driver.browser.file_detector = lambda do |args|
