@@ -116,17 +116,11 @@ RSpec.configure do |config|
 
     driver = Capybara::Selenium::Driver.new(app, browser: :chrome, options: chrome_options )
 
-    bridge = driver.browser.send(:bridge)
-
-    path = '/session/:session_id/chromium/send_command'
-    path[':session_id'] = bridge.session_id
-
-    bridge.http.call(:post, path, cmd: 'Page.setDownloadBehavior',
-      params: {
-        behavior: 'allow',
-        downloadPath: download_path
-      }
-    )
+    # Fix for capybara vs remote files. Selenium handles this for us
+    driver.browser.file_detector = lambda do |args|
+      str = args.first.to_s
+      str if File.exist?(str)
+    end
 
     driver
   end
