@@ -107,7 +107,7 @@ RSpec.configure do |config|
     options.add_argument("--window-size=1440,800")
     options.add_argument("headless")
 
-    Capybara::Selenium::Driver.new(app, browser: :chrome, http_client: client, options: options)
+    driver = Capybara::Selenium::Driver.new(app, browser: :chrome, http_client: client, options: options)
 
     # Fix for capybara vs remote files. Selenium handles this for us
     driver.browser.file_detector = lambda do |args|
