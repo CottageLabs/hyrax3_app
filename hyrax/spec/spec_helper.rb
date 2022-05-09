@@ -95,38 +95,45 @@ RSpec.configure do |config|
 
   # setup selenium  for unit test
 
-  require 'selenium-webdriver'
   require 'capybara'
+  require 'selenium-webdriver'
 
-  Capybara.register_driver :selenium_chrome do |app|
-    client = Selenium::WebDriver::Remote::Http::Default.new
-    client.read_timeout = 120
-    client.open_timeout = 120
-
+  Capybara.register_driver :chrome do |app|
     options = Selenium::WebDriver::Chrome::Options.new
-    options.add_argument("--window-size=1440,800")
-    options.add_argument("headless")
 
-    driver = Capybara::Selenium::Driver.new(app, browser: :chrome, http_client: client, options: options)
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--window-size=1400,1400')
 
-    # Fix for capybara vs remote files. Selenium handles this for us
-    driver.browser.file_detector = lambda do |args|
-      str = args.first.to_s
-      str if File.exist?(str)
-    end
+    options.add_preference(:download,
+                              directory_upgrade: true,
+                              prompt_for_download: false,
+                              default_directory: download_path)
 
-    driver.maximize_window driver.current_window_handle
+    options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
+
+    driver = Capybara::Selenium::Driver.new(app, browser: :chrome, options: chrome_options )
+
+    bridge = driver.browser.send(:bridge)
+
+    path = '/session/:session_id/chromium/send_command'
+    path[':session_id'] = bridge.session_id
+
+    bridge.http.call(:post, path, cmd: 'Page.setDownloadBehavior',
+                     params: {
+                        behavior: 'allow',
+                        downloadPath: download_path
+                     })
     driver
   end
 
   Capybara.configure do |config|
     config.default_max_wait_time = 30 #seconds
-    config.default_driver = :selenium_chrome
+    config.server_host = '0.0.0.0'
+    config.server_port = 3010
+    config.app_host = "http://#{IPSocket.getaddress(Socket.gethostname)}:#{Capybara.server_port}"
+    config.javascript_driver = :selenium_chrome_headless
   end
-
-  Capybara.server_host = '0.0.0.0'
-  Capybara.server_port = 3010
-  ip = IPSocket.getaddress(Socket.gethostname)
-  Capybara.app_host = "http://#{ip}:#{Capybara.server_port}"
-  Capybara.javascript_driver = :selenium_chrome
 end
