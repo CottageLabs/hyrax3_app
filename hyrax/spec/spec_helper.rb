@@ -119,8 +119,6 @@ RSpec.configure do |config|
     driver
   end
 
-  Capybara.javascript_driver = :selenium_chrome
-
   Capybara.configure do |config|
     config.default_max_wait_time = 30 #seconds
     config.default_driver = :selenium_chrome
@@ -130,5 +128,5 @@ RSpec.configure do |config|
   Capybara.server_port = 3010
   ip = IPSocket.getaddress(Socket.gethostname)
   Capybara.app_host = "http://#{ip}:#{Capybara.server_port}"
-  Capybara.javascript_driver = :selenium_chrome_headless_sandboxless # This is slower
+  Capybara.javascript_driver = :selenium_chrome
 end
