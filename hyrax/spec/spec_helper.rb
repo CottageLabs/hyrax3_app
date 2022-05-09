@@ -107,13 +107,6 @@ RSpec.configure do |config|
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--window-size=1400,1400')
 
-    options.add_preference(:download,
-                              directory_upgrade: true,
-                              prompt_for_download: false,
-                              default_directory: download_path)
-
-    options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
-
     driver = Capybara::Selenium::Driver.new(app, browser: :chrome, options: chrome_options )
 
     # Fix for capybara vs remote files. Selenium handles this for us
@@ -126,7 +119,6 @@ RSpec.configure do |config|
   end
 
   Capybara.configure do |config|
-    config.default_max_wait_time = 30 #seconds
     config.server_host = '0.0.0.0'
     config.server_port = 3010
     config.app_host = "http://#{IPSocket.getaddress(Socket.gethostname)}:#{Capybara.server_port}"
