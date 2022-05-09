@@ -98,7 +98,7 @@ RSpec.configure do |config|
   require 'capybara'
   require 'selenium-webdriver'
 
-  Capybara.register_driver :chrome do |app|
+  Capybara.register_driver :selenium_chrome_headless do |app|
     options = Selenium::WebDriver::Chrome::Options.new
 
     options.add_argument('--headless')
@@ -122,10 +122,12 @@ RSpec.configure do |config|
     path[':session_id'] = bridge.session_id
 
     bridge.http.call(:post, path, cmd: 'Page.setDownloadBehavior',
-                     params: {
-                        behavior: 'allow',
-                        downloadPath: download_path
-                     })
+      params: {
+        behavior: 'allow',
+        downloadPath: download_path
+      }
+    )
+
     driver
   end
 
