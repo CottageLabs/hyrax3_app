@@ -107,7 +107,7 @@ RSpec.configure do |config|
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1400,1400')
 
-    driver = Capybara::Selenium::Driver.new(app, browser: :remote, options: chrome_options )
+    driver = Capybara::Selenium::Driver.new(app, browser: :chrome, options: chrome_options )
 
     # Fix for capybara vs remote files. Selenium handles this for us
     driver.browser.file_detector = lambda do |args|
