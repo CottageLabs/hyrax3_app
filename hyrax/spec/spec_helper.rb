@@ -98,12 +98,16 @@ RSpec.configure do |config|
   require 'selenium-webdriver'
   require 'capybara'
 
-  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome()
-  Capybara.register_driver :selenium_chrome_headless_sandboxless do |app|
-    driver = Capybara::Selenium::Driver.new(app,
-                                            browser: :remote,
-                                            desired_capabilities: capabilities,
-                                            url: ENV['HUB_URL'])
+  Capybara.register_driver :selenium_chrome do |app|
+    client = Selenium::WebDriver::Remote::Http::Default.new
+    client.read_timeout = 120
+    client.open_timeout = 120
+
+    options = Selenium::WebDriver::Chrome::Options.new
+    options.add_argument("--window-size=1440,800")
+    options.add_argument("headless")
+
+    Capybara::Selenium::Driver.new(app, browser: :chrome, http_client: client, options: options)
 
     # Fix for capybara vs remote files. Selenium handles this for us
     driver.browser.file_detector = lambda do |args|
@@ -113,7 +117,13 @@ RSpec.configure do |config|
 
     driver.maximize_window driver.current_window_handle
     driver
+  end
 
+  Capybara.javascript_driver = :selenium_chrome
+
+  Capybara.configure do |config|
+    config.default_max_wait_time = 30 #seconds
+    config.default_driver = :selenium_chrome
   end
 
   Capybara.server_host = '0.0.0.0'
