@@ -19,8 +19,6 @@ RSpec.feature "Create a Etd", js: true do
     let(:workflow) { Sipity::Workflow.create!(active: true, name: "test-workflow", permission_template: permission_template) }
 
     before do
-      pending("Making circleci build to pass. Fixing this test case lately.")
-
       ActiveFedora::Cleaner.clean!
 
       # Create a single action that can be taken
