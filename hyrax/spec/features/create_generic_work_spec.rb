@@ -10,15 +10,18 @@ RSpec.feature 'Create a GenericWork', js: true do
     let(:user_attributes) do
       { email: 'test@example.com' }
     end
+
     let(:user) do
       User.new(user_attributes) { |u| u.save(validate: false) }
     end
+
     let(:admin_set_id) { Hyrax::AdminSetCreateService.find_or_create_default_admin_set.id.to_s }
     let(:permission_template) { Hyrax::PermissionTemplate.find_or_create_by!(source_id: admin_set_id) }
     let(:workflow) { Sipity::Workflow.create!(active: true, name: 'test-workflow', permission_template: permission_template) }
 
     before do
       ActiveFedora::Cleaner.clean!
+
       # Create a single action that can be taken
       Sipity::WorkflowAction.create!(name: 'submit', workflow: workflow)
 
@@ -29,6 +32,7 @@ RSpec.feature 'Create a GenericWork', js: true do
         agent_id: user.user_key,
         access: 'deposit'
       )
+
       login_as user
     end
 
