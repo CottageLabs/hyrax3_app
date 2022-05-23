@@ -41,6 +41,11 @@ RSpec.describe Collection, type: :model do
   end
 
   describe "#members_objects", clean_repo: true do
+    before do
+      DatabaseCleaner.clean
+      ActiveFedora::Cleaner.clean!
+    end
+
     let(:collection) { create(:collection_lw) }
 
     it "is empty by default" do
@@ -60,9 +65,14 @@ RSpec.describe Collection, type: :model do
 
       context 'when multiple membership checker returns a non-nil value' do
         before do
-          allow(Hyrax::MultipleMembershipChecker).to receive(:new).with(item: work1).and_return(nil_checker)
-          allow(Hyrax::MultipleMembershipChecker).to receive(:new).with(item: work2).and_return(checker)
-          allow(Hyrax::MultipleMembershipChecker).to receive(:new).with(item: work3).and_return(nil_checker)
+          work1_member = Hyrax.query_service.find_by(id: work1.id)
+          work2_member = Hyrax.query_service.find_by(id: work2.id)
+          work3_member = Hyrax.query_service.find_by(id: work3.id)
+          
+          allow(Hyrax::MultipleMembershipChecker).to receive(:new).with(item: work1_member).and_return(nil_checker)
+          allow(Hyrax::MultipleMembershipChecker).to receive(:new).with(item: work2_member).and_return(checker)
+          allow(Hyrax::MultipleMembershipChecker).to receive(:new).with(item: work3_member).and_return(nil_checker)
+
           allow(nil_checker).to receive(:check).and_return(nil)
           allow(checker).to receive(:check).and_return(error_message)
         end
@@ -72,8 +82,11 @@ RSpec.describe Collection, type: :model do
         let(:error_message) { 'Error: foo bar' }
 
         it 'fails to add the member' do
-          collection.add_member_objects [work1.id, work2.id, work3.id]
+          begin
+            collection.add_member_objects [work1.id, work2.id, work3.id]
+          rescue; end
           collection.save!
+
           expect(collection.reload.member_objects).to match_array [work1, work3]
         end
       end
@@ -97,6 +110,7 @@ RSpec.describe Collection, type: :model do
 
   describe "Collection by another name" do
     before do
+
       class OtherCollection < ActiveFedora::Base
         include Hyrax::CollectionBehavior
       end
@@ -104,8 +118,9 @@ RSpec.describe Collection, type: :model do
       class Member < ActiveFedora::Base
         include Hydra::Works::WorkBehavior
       end
-      collection.add_member_objects member.id
+      collection.add_member_objects [member.id]
     end
+
     after do
       Object.send(:remove_const, :OtherCollection)
       Object.send(:remove_const, :Member)
@@ -141,11 +156,11 @@ RSpec.describe Collection, type: :model do
 
     it 'throws ActiveRecord::RecordNotFound if cannot find collection type for the gid' do
       gid = 'gid://internal/hyrax-collectiontype/999'
-      expect { collection.collection_type_gid = gid }.to raise_error(ActiveRecord::RecordNotFound, "Couldn't find Hyrax::CollectionType matching GID '#{gid}'")
+      expect { collection.collection_type_gid = gid }.to raise_error(ActiveRecord::RecordNotFound, "Couldn't find Hyrax::CollectionType with 'id'=999")
     end
 
     it 'throws ActiveRecord::RecordNotFound if set to nil' do
-      expect { collection.collection_type_gid = nil }.to raise_error(ActiveRecord::RecordNotFound, "Couldn't find Hyrax::CollectionType matching GID ''")
+      expect { collection.collection_type_gid = nil }.to raise_error(URI::InvalidURIError, "URI::InvalidURIError")
     end
 
     it 'updates the collection_type instance variable' do

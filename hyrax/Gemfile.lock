@@ -304,6 +304,7 @@ GEM
       faraday
     fcrepo_wrapper (0.9.0)
       ruby-progressbar
+    ffaker (2.21.0)
     ffi (1.15.5)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
@@ -837,6 +838,8 @@ GEM
       rdf-xsd (~> 3.2)
       sparql (~> 3.2)
       sxp (~> 1.2)
+    shoulda-matchers (5.1.0)
+      activesupport (>= 5.2.0)
     sidekiq (6.4.1)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
@@ -973,6 +976,7 @@ DEPENDENCIES
   devise-guests (~> 0.6)
   factory_bot_rails
   fcrepo_wrapper
+  ffaker
   geckodriver-helper (= 0.24.0)
   hydra-role-management
   hyrax (= 3.3.0)
@@ -989,6 +993,7 @@ DEPENDENCIES
   rspec-rails
   sass-rails (~> 5.0)
   selenium-webdriver
+  shoulda-matchers
   sidekiq (~> 6.0)
   solr_wrapper (>= 0.3)
   solrizer (~> 4.1)
@@ -1002,7 +1007,7 @@ DEPENDENCIES
   web-console (>= 3.3.0)
 
 RUBY VERSION
-   ruby 2.7.5p203
+   ruby 2.7.6p219
 
 BUNDLED WITH
    2.1.4
