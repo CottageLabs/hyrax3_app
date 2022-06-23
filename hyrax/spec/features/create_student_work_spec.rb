@@ -84,7 +84,7 @@ RSpec.feature 'Create a StudentWork', js: true do
 
       click_button('Save')
       expect(page).to have_content('My Test Work')
-      # expect(page).to have_content "Your files are being processed by Hyrax in the background."
+      # expect(page).to have_content "Your files are being processed by Digital WPI in the background."
     end
   end
 end

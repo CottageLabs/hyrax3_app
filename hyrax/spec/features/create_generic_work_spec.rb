@@ -80,7 +80,7 @@ RSpec.feature 'Create a GenericWork', js: true do
 
       click_button('Save')
       expect(page).to have_content('My Test Work', wait: 20)
-      # expect(page).to have_content "Your files are being processed by Digital WPI in the background."  # KTODO old version message??
+      # expect(page).to have_content "Your files are being processed by Digital WPI in the background."
     end
   end
 end

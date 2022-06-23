@@ -9,7 +9,8 @@ test:
   url: <%= ENV['FEDORA_URL_SCHEME'] || 'http' %>://<%= ENV['FEDORA_HOST'] || 'localhost' %>:<%= ENV['FEDORA_TEST_PORT'] || 8986 %><%= ENV['FCREPO_PATH'] || '/rest' %>
   base_path: /test
 production:
-  user: fedoraAdmin
-  password: fedoraAdmin
-  url: <%= ENV['FEDORA_URL_SCHEME'] || 'http' %>://<%= ENV['FEDORA_HOST'] || 'fcrepo' %>:<%= ENV['FEDORA_PORT'] || '8080' %><%= ENV['FCREPO_PATH'] || '/fcrepo/rest' %>
-  base_path: /hyrax_production
+  user: <%= ENV['FEDORA_USER'] %>
+  password: <%= ENV['FEDORA_PASS'] %>
+  url: <%= ENV['FEDORA_HOST'] %>
+  base_path: /prod
+  request: { timeout: 1000, open_timeout: 100} #increase timeout if solr reindex times out
