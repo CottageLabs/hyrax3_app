@@ -1,8 +1,9 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.17.0"
+lock "~> 3.11.0"
 my_app_name = "digitalwpi"
 set :application, "#{my_app_name}"
 set :repo_url, "https://github.com/CottageLabs/hyrax3_app.git"
+set :repo_tree, "hyrax"
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
