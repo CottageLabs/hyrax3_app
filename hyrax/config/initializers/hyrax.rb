@@ -32,7 +32,7 @@ Hyrax.config do |config|
   config.contact_email = ENV['MAILUSER']
 
   # Text prefacing the subject entered in the contact form
-  config.subject_prefix = ENV['CONTACT_FORM_SUBJECT_PREFIX'] || "Hyrax Contact form:"
+  # config.subject_prefix = "Contact form:"
 
   # How many notifications should be displayed on the dashboard
   # config.max_notifications_for_dashboard = 5
@@ -77,7 +77,7 @@ Hyrax.config do |config|
   # config.redis_namespace = "hyrax"
 
   # Path to the file characterization tool
-  config.fits_path = ENV['FITS_PATH'] || "/fits/fits-1.5.0/fits.sh"
+  # config.fits_path = "fits.sh"
 
   # Path to the file derivatives creation tool
   # config.libreoffice_path = "soffice"
@@ -94,11 +94,11 @@ Hyrax.config do |config|
   # config.arkivo_api = false
 
   # Stream realtime notifications to users in the browser
-  # config.realtime_notifications = true
+  config.realtime_notifications = false
 
   # Location autocomplete uses geonames to search for named regions
   # Username for connecting to geonames
-  # config.geonames_username = ''
+  config.geonames_username = 'digitalwpi'
 
   # Should the acceptance of the licence agreement be active (checkbox), or
   # implied when the save button is pressed? Set to true for active
@@ -129,21 +129,10 @@ Hyrax.config do |config|
   #
   # Default is false
   config.iiif_image_server = true
-  if ENV.fetch('IIIF_TO_SERVE_SSL_URLS', 'false') == 'true'
-    protocol = 'https'
-  else
-    protocol = 'http'
-  end
-
-  if Rails.env.development?
-    port = ENV.fetch('PORT', 3000)
-  else
-    port = nil
-  end
 
   # Returns a URL that resolves to an image provided by a IIIF image server
-  config.iiif_image_url_builder = lambda do |file_id, base_url, size, format|
-    Riiif::Engine.routes.url_helpers.image_url(file_id, host: base_url, size: size, protocol: protocol, port: port)
+  config.iiif_image_url_builder = lambda do |file_id, base_url, size|
+    Riiif::Engine.routes.url_helpers.image_url(file_id, host: base_url, size: size)
   end
   # config.iiif_image_url_builder = lambda do |file_id, base_url, size, format|
   #   "#{base_url}/downloads/#{file_id.split('/').first}"
@@ -151,7 +140,7 @@ Hyrax.config do |config|
 
   # Returns a URL that resolves to an info.json file provided by a IIIF image server
   config.iiif_info_url_builder = lambda do |file_id, base_url|
-    uri = Riiif::Engine.routes.url_helpers.info_url(file_id, host: base_url, protocol: protocol, port: port)
+    uri = Riiif::Engine.routes.url_helpers.info_url(file_id, host: base_url)
     uri.sub(%r{/info\.json\Z}, '')
   end
 
@@ -183,12 +172,15 @@ Hyrax.config do |config|
 
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately
-  config.upload_path = ->() { ENV.fetch('UPLOADS_PATH', Rails.root.join('tmp', 'uploads')) }
-  config.cache_path = ->() { ENV.fetch('CACHE_PATH', Rails.root.join('tmp', 'uploads', 'cache')) }
+  #  config.upload_path = ->() { Rails.root + 'tmp' + 'uploads' }
+  #  config.cache_path = ->() { Rails.root + 'tmp' + 'uploads' + 'cache' }
+  config.upload_path = ->() { Pathname.new(File.absolute_path(ENV["NFS_DIR"]+ '/')) + 'rails' + 'uploads' }
+  config.cache_path = ->() { Pathname.new(File.absolute_path(ENV["NFS_DIR"]+ '/')) + 'rails' + 'uploads' + 'cache' }
 
   # Location on local file system where derivatives will be stored
   # If you use a multi-server architecture, this MUST be a shared volume
-  config.derivatives_path = ENV.fetch('DERIVATIVES_PATH', Rails.root.join('tmp', 'derivatives'))
+  # config.derivatives_path = Rails.root.join('tmp', 'derivatives')
+  config.derivatives_path = Pathname.new(File.absolute_path(ENV["NFS_DIR"]+ '/'))  + 'rails' + 'derivatives'
 
   # Should schema.org microdata be displayed?
   # config.display_microdata = true
@@ -200,7 +192,8 @@ Hyrax.config do |config|
   # Location on local file system where uploaded files will be staged
   # prior to being ingested into the repository or having derivatives generated.
   # If you use a multi-server architecture, this MUST be a shared volume.
-  config.working_path = ENV.fetch('UPLOADS_PATH', Rails.root.join('tmp', 'uploads'))
+  # config.working_path = Rails.root.join( 'tmp', 'uploads')
+  config.working_path = Pathname.new(ENV["NFS_DIR"]+ '/')  + 'rails' + 'uploads'
 
   # Should the media display partial render a download link?
   # config.display_media_download_link = true
@@ -219,7 +212,7 @@ Hyrax.config do |config|
   # config.owner_permission_levels = { "Edit Access" => "edit" }
 
   # Path to the ffmpeg tool
-  # config.ffmpeg_path = 'ffmpeg'
+  config.ffmpeg_path = 'ffmpeg'
 
   # Max length of FITS messages to display in UI
   # config.fits_message_length = 5
@@ -246,24 +239,6 @@ Hyrax.config do |config|
   #                                "#{ActiveFedora.fedora.host}#{ActiveFedora.fedora.base_path}/#{Noid::Rails.treeify(id)}"
   #                              end
 
-  # Identify the model class name that will be used for Collections in your app
-  # (i.e. ::Collection for ActiveFedora, Hyrax::PcdmCollection for Valkyrie)
-  # config.collection_model = '::Collection'
-  # config.collection_model = 'Hyrax::PcdmCollection'
-
-  # Identify the model class name that will be used for Admin Sets in your app
-  # (i.e. AdminSet for ActiveFedora, Hyrax::AdministrativeSet for Valkyrie)
-  # config.admin_set_model = 'AdminSet'
-  # config.admin_set_model = 'Hyrax::AdministrativeSet'
-
-  # When your application is ready to use the valkyrie index instead of the one
-  # maintained by active fedora, you will need to set this to true. You will
-  # also need to update your Blacklight configuration.
-  # config.query_index_from_valkyrie = false
-
-  ## Configure index adapter for Valkyrie::Resources to use solr readonly indexer
-  # config.index_adapter = :solr_index
-
   ## Fedora import/export tool
   #
   # Path to the Fedora import export tool jar file
@@ -275,7 +250,7 @@ Hyrax.config do |config|
   # If browse-everything has been configured, load the configs.  Otherwise, set to nil.
   begin
     if defined? BrowseEverything
-      config.browse_everything = nil
+      config.browse_everything = BrowseEverything.config
     else
       Rails.logger.warn "BrowseEverything is not installed"
     end
@@ -283,7 +258,7 @@ Hyrax.config do |config|
     config.browse_everything = nil
   end
 
-  ## Register all directories which can be used to ingest from the local file
+  ## Whitelist all directories which can be used to ingest from the local file
   # system.
   #
   # Any file, and only those, that is anywhere under one of the specified
@@ -297,11 +272,11 @@ Hyrax.config do |config|
   # ingest files from the file system that are not part of the BrowseEverything
   # mount point.
   #
-  # config.registered_ingest_dirs = []
+  # config.whitelisted_ingest_dirs = []
 
   ##
   # Set the system-wide virus scanner
-  config.virus_scanner = Hyrax::VirusScanner
+  # config.virus_scanner = Hyrax::VirusScanner
 
   ## Remote identifiers configuration
   # Add registrar implementations by uncommenting and adding to the hash below.
@@ -309,10 +284,7 @@ Hyrax.config do |config|
   # config.identifier_registrars = {}
 end
 
-DEFAULT_DATE_FORMAT = ENV['DEFAULT_DATE_FORMAT'] || '%m/%d/%Y'
-Date::DATE_FORMATS[:standard] = DEFAULT_DATE_FORMAT
-DateTime::DATE_FORMATS[:standard] = DEFAULT_DATE_FORMAT
-Date::DATE_FORMATS[:default] = DEFAULT_DATE_FORMAT
+Date::DATE_FORMATS[:standard] = "%m/%d/%Y"
 
 Qa::Authorities::Local.register_subauthority('subjects', 'Qa::Authorities::Local::TableBasedAuthority')
 Qa::Authorities::Local.register_subauthority('languages', 'Qa::Authorities::Local::TableBasedAuthority')
