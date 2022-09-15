@@ -1,0 +1,4 @@
+:queues:
+  - default
+  - import # added
+  - export # added
