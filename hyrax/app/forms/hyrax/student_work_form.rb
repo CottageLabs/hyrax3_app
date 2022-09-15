@@ -4,6 +4,7 @@ module Hyrax
   # Generated form for StudentWork
   class StudentWorkForm < Hyrax::Forms::WorkForm
     self.model_class = ::StudentWork
+    self.terms -= [:alternate_title]
     self.terms += [:resource_type, :alternate_title, :award, :includes]
     self.terms += [:advisor, :sponsor, :center, :year]
     self.terms += [:funding, :institute, :sdg, :school, :major]
