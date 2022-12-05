@@ -136,6 +136,8 @@ module Hyrax
       csv = [[],[]]
       col = 0
       hash.each_pair do |key, val|
+        # state is a hash. We don't want to share editorial notes
+        next if %w(state editorial_note).include? key
         unless val.blank?
           unless val.kind_of?(Array)
             csv[0][col] = if key.length < val.length then "\"#{key.chomp}\"" + " " * (val.length-key.length) else "\"#{key.chomp}\"" end
