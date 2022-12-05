@@ -22,5 +22,6 @@ module Hyrax
     delegate :series, to: :solr_document
     delegate :sponsor, to: :solr_document
     delegate :year, to: :solr_document
+    delegate :editorial_note, to: :solr_document
   end
 end
