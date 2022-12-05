@@ -23,25 +23,14 @@ module Hyrax
     end
 
     def create
-      add_date_and_creator_to_note
+      add_date_and_creator_to_note('generic_work')
       super
     end
 
     def update
-      add_date_and_creator_to_note
+      add_date_and_creator_to_note('generic_work')
       super
     end
 
-    private
-    def add_date_and_creator_to_note
-      if params['generic_work'].include?('editorial_note') and params['generic_work']['editorial_note'].present?
-        notes = []
-        notes = JSON.parse(@curation_concern.editorial_note) if @curation_concern.editorial_note.present?
-        notes = [notes] unless notes.is_a? Array
-        params['generic_work']['editorial_note'] = notes.append(
-          {'note': params['generic_work']['editorial_note'], created: Time.now, user_id: current_user.email, user_name: current_user.name}
-        ).to_json
-      end
-    end
   end
 end

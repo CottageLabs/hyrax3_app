@@ -98,18 +98,6 @@ RSpec.describe Hyrax::GenericWorkPresenter do
     presenter.editorial_note
   end
 
-  describe '#export_as_ttl' do
-    let(:host) { double(host: 'http://example.org') }
-    let(:user) { nil }
-    let(:presenter) { described_class.new(solr_document, Ability.new(user), host) }
-    subject { presenter.export_as_ttl }
-    let(:editorial_note_regex) { %r(<http://www.w3.org/2004/02/skos/core#editorialNote> "My editorial note";) }
-
-    it "should not have editorial note triple" do
-      is_expected.not_to match(editorial_note_regex)
-    end
-  end
-
   describe '#export' do
     let(:host) { double(host: 'http://example.org') }
     let(:user) { nil }
@@ -154,7 +142,6 @@ RSpec.describe Hyrax::GenericWorkPresenter do
         expect(subject["model:hasModel"]).to eql "GenericWork"
       end
       it "should not have editorial note triple" do
-        puts(subject)
         is_expected.not_to include("skos:editorialNote" => "My editorial note")
       end
     end
