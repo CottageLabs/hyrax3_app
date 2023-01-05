@@ -1,7 +1,4 @@
 terms:
-- id: https://www.europeana.eu/en/rights/rr-r
-  term: "All rights reserved"
-  active: true
 - id: http://rightsstatements.org/vocab/InC/1.0/
   term: "In Copyright"
   active: true
