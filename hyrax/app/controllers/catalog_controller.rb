@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 class CatalogController < ApplicationController
-
   include BlacklightRangeLimit::ControllerOverride
   include BlacklightAdvancedSearch::Controller
   include Hydra::Catalog
   include Hydra::Controller::ControllerBehavior
-  # include BlacklightOaiProvider::Controller
+  include BlacklightOaiProvider::Controller
 
   # This filter applies the hydra access controls
   before_action :enforce_show_permissions, only: :show
@@ -30,7 +29,6 @@ class CatalogController < ApplicationController
     # config.advanced_search[:qt] ||= 'advanced'
     config.advanced_search[:url_key] ||= 'advanced'
     config.advanced_search[:query_parser] ||= 'dismax'
-    config.advanced_search[:form_solr_parameters] ||= {}
 
     config.view.gallery.partials = [:index_header, :index]
     config.view.masonry.partials = [:index]
@@ -63,22 +61,23 @@ class CatalogController < ApplicationController
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
     # config.add_facet_field solr_name("human_readable_type", :facetable), label: "Type", limit: 5
-    config.add_facet_field solr_name('member_of_collection_ids', :symbol), limit: 5, label: 'Collections', sort: 'count', collapse: false, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_collection_ids', :symbol), label: 'Collections', sort: 'count', collapse: false, helper_method: :collection_title_by_id, limit: 5
     #config.add_facet_field solr_name("member_of_collections", :symbol), limit: 5, label: 'Collections', collapse: false
+    #config.add_facet_field solr_name("year", :facetable), label: "Year", sort: 'index desc', limit: 5
     config.add_facet_field solr_name("year", :facetable), label: "Year", range: {
-      num_segments: 6,
-      assumed_boundaries: [1350, Time.now.year + 2],
-      segments: false,
-      maxlength: 10
-    }
-    config.add_facet_field solr_name("creator", :facetable), limit: 5, sort: 'index', index_range: 'A'..'Z'
-    config.add_facet_field solr_name("advisor", :facetable), label: "Advisor", limit: 5, sort: 'index', index_range: 'A'..'Z'
-    config.add_facet_field solr_name("contributor", :facetable), label: "Contributor", limit: 5, sort: 'index', index_range: 'A'..'Z'
-    config.add_facet_field solr_name("center", :facetable), label: "Project Center", limit: 5, sort: 'index', index_range: 'A'..'Z'
-    config.add_facet_field solr_name("major", :facetable), label: "Major", limit: 5, sort: 'index', index_range: 'A'..'Z'
-    config.add_facet_field solr_name("department", :facetable), label: "Unit", limit: 5, sort: 'index', index_range: 'A'..'Z'
-    config.add_facet_field solr_name("publisher", :facetable), limit: 5
-    config.add_facet_field solr_name("subject", :facetable), limit: 5, sort: 'index', index_range: 'A'..'Z'
+     num_segments: 6,
+     assumed_boundaries: [1350, Time.now.year+2],
+     segments: true,
+     maxlength: 10
+    }, include_in_advanced_search: false
+    config.add_facet_field solr_name("creator", :facetable), sort: 'index', index_range: 'A'..'Z', limit: 5, include_in_advanced_search: false
+    config.add_facet_field solr_name("advisor", :facetable), label: "Advisor", sort: 'index', index_range: 'A'..'Z', limit: 5
+    config.add_facet_field solr_name("contributor", :facetable), label: "Contributor", sort: 'index', index_range: 'A'..'Z', limit: 5, include_in_advanced_search: false
+    config.add_facet_field solr_name("center", :facetable), label: "Project Center", sort: 'index', index_range: 'A'..'Z', limit: 5
+    config.add_facet_field solr_name("major", :facetable), label: "Major", sort: 'index', index_range: 'A'..'Z', limit: 5
+    config.add_facet_field solr_name("department", :facetable), label: "Unit", sort: 'index', index_range: 'A'..'Z', limit: 5
+    config.add_facet_field solr_name("publisher", :facetable), limit: 5, include_in_advanced_search: false
+    config.add_facet_field solr_name("subject", :facetable), sort: 'index', index_range: 'A'..'Z', limit: 5, include_in_advanced_search: false
     config.add_facet_field solr_name('sdg', :facetable), label: "UN SDG", limit: 17, sort: 'index', helper_method: :sdg_facet_display
     config.add_facet_field solr_name("resource_type", :facetable), label: "Resource Type", limit: 5
     #config.add_facet_field solr_name("language", :facetable), limit: 5
@@ -96,30 +95,29 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
-    config.add_index_field solr_name("keyword", :stored_searchable), itemprop: 'keywords', link_to_search: solr_name("keyword", :facetable)
-    config.add_index_field solr_name("creator", :stored_searchable), itemprop: 'creator', link_to_search: solr_name("creator", :facetable)
-    config.add_index_field solr_name("advisor", :stored_searchable), label: "Advisor", itemprop: 'advisor', link_to_search: solr_name("advisor", :facetable)
-    config.add_index_field solr_name("publisher", :stored_searchable), itemprop: 'publisher', link_to_search: solr_name("publisher", :facetable)
-    config.add_index_field solr_name("date_created", :stored_searchable), itemprop: 'dateCreated'
-    config.add_index_field solr_name("resource_type", :stored_searchable), label: "Resource Type", link_to_search: solr_name("resource_type", :facetable)
-    config.add_index_field solr_name("degree", :stored_searchable), label: "Degree"
-    config.add_index_field solr_name("department", :stored_searchable), label: "Unit"
     # config.add_index_field solr_name("description", :stored_searchable), itemprop: 'description', helper_method: :iconify_auto_link
+    config.add_index_field solr_name("keyword", :stored_searchable), itemprop: 'keywords', link_to_search: solr_name("keyword", :facetable)
     # config.add_index_field solr_name("subject", :stored_searchable), itemprop: 'about', link_to_search: solr_name("subject", :facetable)
+    config.add_index_field solr_name("creator", :stored_searchable), itemprop: 'creator', link_to_search: solr_name("creator", :facetable)
     # config.add_index_field solr_name("contributor", :stored_searchable), itemprop: 'contributor', link_to_search: solr_name("contributor", :facetable)
+    config.add_index_field solr_name("advisor", :stored_searchable), label: "Advisor", itemprop: 'advisor', link_to_search: solr_name("advisor", :facetable)
     # config.add_index_field solr_name("proxy_depositor", :symbol), label: "Depositor", helper_method: :link_to_profile
     # config.add_index_field solr_name("depositor"), label: "Owner", helper_method: :link_to_profile
+    config.add_index_field solr_name("publisher", :stored_searchable), itemprop: 'publisher', link_to_search: solr_name("publisher", :facetable)
     # config.add_index_field solr_name("based_near_label", :stored_searchable), itemprop: 'contentLocation', link_to_search: solr_name("based_near_label", :facetable)
     # config.add_index_field solr_name("language", :stored_searchable), itemprop: 'inLanguage', link_to_search: solr_name("language", :facetable)
     # config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), itemprop: 'datePublished', helper_method: :human_readable_date
     # config.add_index_field solr_name("date_modified", :stored_sortable, type: :date), itemprop: 'dateModified', helper_method: :human_readable_date
+    config.add_index_field solr_name("date_created", :stored_searchable), itemprop: 'dateCreated', include_in_advanced_search: false
     # config.add_index_field solr_name("rights_statement", :stored_searchable), helper_method: :rights_statement_links
     # config.add_index_field solr_name("license", :stored_searchable), helper_method: :license_links
+    config.add_index_field solr_name("resource_type", :stored_searchable), label: "Resource Type", link_to_search: solr_name("resource_type", :facetable)
     # config.add_index_field solr_name("file_format", :stored_searchable), link_to_search: solr_name("file_format", :facetable)
     # config.add_index_field solr_name("identifier", :stored_searchable), helper_method: :index_field_link, field_name: 'identifier'
     # config.add_index_field solr_name("embargo_release_date", :stored_sortable, type: :date), label: "Embargo release date", helper_method: :human_readable_date
     # config.add_index_field solr_name("lease_expiration_date", :stored_sortable, type: :date), label: "Lease expiration date", helper_method: :human_readable_date
-
+    config.add_index_field solr_name("degree", :stored_searchable), label: "Degree"
+    config.add_index_field solr_name("department", :stored_searchable), label: "Unit"
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
@@ -173,14 +171,9 @@ class CatalogController < ApplicationController
     # of Solr search fields.
     # creator, title, description, publisher, date_created,
     # subject, language, resource_type, format, identifier, based_near,
-    config.add_search_field('contributor') do |field|
-      # solr_parameters hash are sent to Solr as ordinary url query params.
 
-      # :solr_local_parameters will be sent using Solr LocalParams
-      # syntax, as eg {! qf=$title_qf }. This is neccesary to use
-      # Solr parameter de-referencing like $title_qf.
-      # See: http://wiki.apache.org/solr/LocalParams
-      solr_name = solr_name("contributor", :stored_searchable)
+    config.add_search_field('title') do |field|
+      solr_name = solr_name("title", :stored_searchable)
       field.solr_local_parameters = {
         qf: solr_name,
         pf: solr_name
@@ -195,8 +188,24 @@ class CatalogController < ApplicationController
       }
     end
 
-    config.add_search_field('title') do |field|
-      solr_name = solr_name("title", :stored_searchable)
+    config.add_search_field('advisor') do |field|
+      solr_name = solr_name("advisor", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('contributor') do |field|
+      solr_name = solr_name("contributor", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('resource_type') do |field|
+      solr_name = solr_name("resource_type", :stored_searchable)
       field.solr_local_parameters = {
         qf: solr_name,
         pf: solr_name
@@ -212,66 +221,8 @@ class CatalogController < ApplicationController
       }
     end
 
-    config.add_search_field('publisher') do |field|
-      solr_name = solr_name("publisher", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
-    end
-
-    config.add_search_field('date_created') do |field|
-      solr_name = solr_name("created", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
-    end
-
     config.add_search_field('subject') do |field|
       solr_name = solr_name("subject", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
-    end
-
-    config.add_search_field('language') do |field|
-      solr_name = solr_name("language", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
-    end
-
-    config.add_search_field('resource_type') do |field|
-      solr_name = solr_name("resource_type", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
-    end
-
-    config.add_search_field('format') do |field|
-      field.include_in_advanced_search = false
-      solr_name = solr_name("format", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
-    end
-
-    config.add_search_field('identifier') do |field|
-      solr_name = solr_name("id", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
-    end
-
-    config.add_search_field('based_near') do |field|
-      field.label = "Location"
-      solr_name = solr_name("based_near_label", :stored_searchable)
       field.solr_local_parameters = {
         qf: solr_name,
         pf: solr_name
@@ -286,12 +237,65 @@ class CatalogController < ApplicationController
       }
     end
 
+    config.add_search_field('publisher') do |field|
+      solr_name = solr_name("publisher", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('identifier') do |field|
+      solr_name = solr_name("identifier", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('date_created') do |field|
+      solr_name = solr_name("date_created", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('language') do |field|
+      solr_name = solr_name("language", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+      field.include_in_advanced_search = false
+    end
+
+    config.add_search_field('format') do |field|
+      field.include_in_advanced_search = false
+      solr_name = solr_name("format", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('based_near') do |field|
+      field.label = "Location"
+      solr_name = solr_name("based_near_label", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+      field.include_in_advanced_search = false
+    end
+
     config.add_search_field('depositor') do |field|
       solr_name = solr_name("depositor", :symbol)
       field.solr_local_parameters = {
         qf: solr_name,
         pf: solr_name
       }
+      field.include_in_advanced_search = false
     end
 
     config.add_search_field('rights_statement') do |field|
@@ -300,6 +304,7 @@ class CatalogController < ApplicationController
         qf: solr_name,
         pf: solr_name
       }
+      field.include_in_advanced_search = false
     end
 
     config.add_search_field('license') do |field|
@@ -308,14 +313,7 @@ class CatalogController < ApplicationController
         qf: solr_name,
         pf: solr_name
       }
-    end
-
-    config.add_search_field('advisor') do |field|
-      solr_name = solr_name("advisor", :stored_searchable)
-      field.solr_local_parameters = {
-        qf: solr_name,
-        pf: solr_name
-      }
+      field.include_in_advanced_search = false
     end
 
     # "sort results by" select (pulldown)
@@ -334,33 +332,49 @@ class CatalogController < ApplicationController
     config.spell_max = 5
 
     # Add Blacklight OAI provider Configuration for Primo
-    # config.oai = {
-    #     provider: {
-    #         repository_name: 'digitalwpi',
-    #         repository_url: Rails.application.config.application_root_url.to_s + '/catalog/oai',
-    #         record_prefix: 'oai:digitalwpi',
-    #         admin_email: 'zchen12@wpi.edu',
-    #         sample_id: '109660'
-    #     },
-    #     document: {
-    #         limit: 25,            # number of records returned with each request, default: 15
-    #         set_fields: [        # ability to define ListSets, optional, default: nil
-    #             { label: 'identifier', solr_field: 'identifier_tesim' },
-    #             { label: 'title', solr_field: 'title_tesim' },
-    #             { label: 'creator', solr_field: 'creator_tesim' },
-    #             { label: 'date', solr_field: 'date_created_tesim' },
-    #             { label: 'description', solr_field: 'description_tesim' },
-    #             { label: 'subject', solr_field: 'subject_tesim' },
-    #             { label: 'contributor', solr_field: 'contributor_tesim' },
-    #             { label: 'format', solr_field: 'file_format_tesim' },
-    #             { label: 'language', solr_field: 'language_tesim' },
-    #             { label: 'publisher', solr_field: 'publisher_tesim' },
-    #             { label: 'rights', solr_field: 'rights_statement_tesim' },
-    #             { label: 'source', solr_field: 'source_tesim' },
-    #             { label: 'type', solr_field: 'resource_type_tesim' }
-    #         ]
-    #     }
-    # }
+    config.oai = {
+        provider: {
+            repository_name: 'digitalwpi',
+            repository_url: Rails.application.config.application_root_url.to_s + '/catalog/oai',
+            record_prefix: 'oai:digitalwpi',
+            admin_email: 'zchen12@wpi.edu',
+            sample_id: '109660'
+        },
+        document: {
+            limit: 25,            # number of records returned with each request, default: 15
+            set_fields: [        # ability to define ListSets, optional, default: nil
+                { label: 'identifier', solr_field: 'identifier_tesim' },
+                { label: 'title', solr_field: 'title_tesim' },
+                { label: 'creator', solr_field: 'creator_tesim' },
+                { label: 'date', solr_field: 'date_created_tesim' },
+                { label: 'description', solr_field: 'description_tesim' },
+                { label: 'subject', solr_field: 'subject_tesim' },
+                { label: 'contributor', solr_field: 'contributor_tesim' },
+                { label: 'format', solr_field: 'file_format_tesim' },
+                { label: 'language', solr_field: 'language_tesim' },
+                { label: 'publisher', solr_field: 'publisher_tesim' },
+                { label: 'rights', solr_field: 'rights_statement_tesim' },
+                { label: 'source', solr_field: 'source_tesim' },
+                { label: 'type', solr_field: 'resource_type_tesim' }
+            ]
+        }
+    }
+
+    config.advanced_search[:form_solr_parameters] ||= {
+      # "facet.field" => [
+      # "member_of_collection_ids_ssim", 
+      # "year_sim", 
+      # "advisor_sim", 
+      # "center_sim", 
+      # "major_sim", 
+      # "department_sim", 
+      # "sdg_sim", 
+      # "resource_type_sim", 
+      # "generic_type_sim"
+      # ],
+      "facet.limit" => "-1",
+      "facet.sort" => "index"
+    }
 
   end
 
